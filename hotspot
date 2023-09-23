@@ -1,0 +1,12 @@
+#/usr/bin/sh
+
+# add ip to ethernet
+ip addr add dev enp0s25 192.168.2.1/24
+
+# setup nat
+doas iptables -t nat -A POSTROUTING -o wlp3s0 -j MASQUERADE
+doas iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+doas iptables -A FORWARD -i enp0s25 -o wlp3s0 -j ACCEPT
+
+# setup dhcpd server
+systemctl start dhcpd4
